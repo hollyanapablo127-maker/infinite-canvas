@@ -1,0 +1,46 @@
+services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: canvas
+      POSTGRES_USER: canvas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      TZ: Asia/Shanghai
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U canvas -d canvas"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks: [canvas]
+
+  app:
+    build:
+      context: ./releases/initial/app
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:20-bookworm-slim}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 4010
+      DATA_DIR: /app/data
+      DATABASE_URL: postgresql://canvas:${POSTGRES_PASSWORD}@database:5432/canvas
+    ports:
+      - "127.0.0.1:4024:4010"
+    volumes:
+      - assets:/app/data
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [canvas]
+
+volumes:
+  database:
+  assets:
+
+networks:
+  canvas:

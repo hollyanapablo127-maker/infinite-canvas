@@ -1,0 +1,34 @@
+services:
+  database:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: canvas
+      POSTGRES_USER: canvas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U canvas']
+      interval: 10s
+      retries: 10
+  app:
+    build:
+      context: .
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:20-bookworm-slim}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      DATA_DIR: /app/data
+      DATABASE_URL: postgresql://canvas:${POSTGRES_PASSWORD}@database:5432/canvas
+    ports: ['127.0.0.1:4010:4010']
+    volumes: ['assets:/app/data']
+    depends_on:
+      database:
+        condition: service_healthy
+volumes:
+  database:
+  assets:

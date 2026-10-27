@@ -1,0 +1,13 @@
+node_modules/
+.test-data/
+dist/
+.env
+data/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+.deploy/
+.logs/
+.test-payment-*/
+*.zip
