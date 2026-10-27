@@ -600,6 +600,8 @@ export function CapabilityPanel({
     </div>
   );
 }
+// 多模态工作台暂时下线：入口隐藏，/studio 回落到我的画布。改回 true 即可恢复。
+export const WORKBENCH_ENABLED = false;
 export function CapabilityWorkbench() {
   const [params] = useSearchParams();
   const [data, setData] = useState<Row>({

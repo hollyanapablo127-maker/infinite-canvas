@@ -66,7 +66,10 @@ import {
   Account,
 } from "./pages";
 import { AdminPage } from "./admin";
-import { CapabilityWorkbench } from "./capability-workbench";
+import {
+  CapabilityWorkbench,
+  WORKBENCH_ENABLED,
+} from "./capability-workbench";
 import { CanvasPage } from "./canvas";
 import { LiquidGlassAtmosphere } from "./liquid-glass";
 import "./style.css";
@@ -468,7 +471,9 @@ function Shell() {
             </>
           )}
           <div className="nav-label">个人账号</div>
-          {personal.map(([path, label, Icon]) => (
+          {personal
+            .filter(([path]) => WORKBENCH_ENABLED || path !== "/studio")
+            .map(([path, label, Icon]) => (
             <NavLink
               key={path}
               to={path}
@@ -518,7 +523,9 @@ function Shell() {
           <Route path="/projects" element={<Projects />} />
           <Route path="/canvas/:id" element={<CanvasPage />} />
           <Route path="/models" element={<Models />} />
-          <Route path="/studio" element={<CapabilityWorkbench />} />
+          {WORKBENCH_ENABLED && (
+            <Route path="/studio" element={<CapabilityWorkbench />} />
+          )}
           <Route path="/assets" element={<Assets />} />
           <Route path="/usage" element={<Usage />} />
           <Route path="/keys" element={<Keys />} />

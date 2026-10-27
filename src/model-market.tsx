@@ -36,6 +36,7 @@ import {
 } from "../shared/image";
 import { TYPE_ICONS, BILLING_LABELS } from "./model-admin";
 import { newGenerationPair } from "./pages";
+import { WORKBENCH_ENABLED } from "./capability-workbench";
 
 export function ModelMarket() {
   const query = useData<Row>("/models");
@@ -650,7 +651,8 @@ function ModelDetail({
                 : "在画布中使用"}
           <ArrowUpRight size={18} />
         </button>
-        {model.type !== "image" &&
+        {WORKBENCH_ENABLED &&
+          model.type !== "image" &&
           model.channels.some((c: Row) => c.source === "bailian") && (
             <a
               className="button full"
